@@ -2,113 +2,116 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Gerador de QR Code</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR Code Mobile</title>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
 <style>
 body {
-  font-family: Arial;
-  text-align: center;
-  background: #f5f5f5;
-  padding: 30px;
+  font-family: Arial, sans-serif;
+  background: #eaeaea;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.container {
+  width: 100%;
+  max-width: 420px; /* tamanho de celular */
+  background: #f9f9f9;
+  min-height: 100vh;
+  padding: 15px;
+  box-sizing: border-box;
 }
 
 h1 {
+  text-align: center;
+  font-size: 22px;
   color: #0a7a3d;
-}
-
-input {
-  width: 80%;
-  padding: 10px;
-  margin-top: 10px;
-}
-
-canvas {
-  margin-top: 20px;
 }
 
 .box {
   background: white;
-  padding: 20px;
-  margin-top: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  padding: 15px;
+  margin-top: 15px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
-.pix {
-  word-break: break-all;
-  font-size: 12px;
-  background: #eee;
-  padding: 10px;
-  border-radius: 5px;
-}
-
-textarea {
-  width: 90%;
-  height: 80px;
+input, textarea {
+  width: 100%;
+  padding: 12px;
   margin-top: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
 }
 
 button {
-  padding: 10px 20px;
+  width: 100%;
+  padding: 12px;
   margin-top: 10px;
   background: #0a7a3d;
   color: white;
   border: none;
-  border-radius: 5px;
-  cursor: pointer;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+canvas {
+  display: block;
+  margin: 15px auto;
+}
+
+.pix {
+  font-size: 11px;
+  background: #eee;
+  padding: 10px;
+  border-radius: 8px;
+  word-break: break-all;
 }
 </style>
 </head>
 
 <body>
 
-<h1>Gerador de QR Code</h1>
+<div class="container">
 
-<!-- GERADOR -->
+<h1>📱 QR Code</h1>
+
 <div class="box">
-  <h3>Crie seu QR Code</h3>
-
-  <input type="text" id="link" placeholder="Digite link, @instagram ou número WhatsApp">
-  <br><br>
+  <input type="text" id="link" placeholder="Link, @instagram ou WhatsApp">
 
   <input type="file" id="logoInput" accept="image/*">
-  <br><br>
 
   <button onclick="gerarQR()">Gerar QR Code</button>
-  <button onclick="baixarQR()">Baixar PNG</button>
+  <button onclick="baixarQR()">Baixar</button>
 
-  <br>
   <canvas id="qrcode"></canvas>
 </div>
 
-<!-- PIX -->
 <div class="box">
-
   <canvas id="pixQR"></canvas>
 
-  <p><strong>PIX Copia e Cola:</strong></p>
+  <p><strong>PIX:</strong></p>
   <div class="pix" id="pixCode"></div>
-
-  <p style="margin-top:15px;">
-    <strong>Peço apenas uma contribuição de R$ 5,00 🙏</strong>
-  </p>
-
 </div>
 
-<!-- AVALIAÇÃO -->
 <div class="box">
-  <h3>💬 Avaliação</h3>
   <textarea id="mensagem">Muito obrigado</textarea>
-  <br>
-  <button onclick="enviarWhats()">Enviar para WhatsApp</button>
+  <button onclick="enviarWhats()">Enviar WhatsApp</button>
+</div>
+
 </div>
 
 <script>
 const pix = "00020126330014br.gov.bcb.pix0111084713784855204000053039865802BR5911EWERTOSILVA6009Sao Paulo610901227-20062220518daqr83657656927025630452F9";
 
-// 🔥 GERAR QR COM DETECÇÃO INTELIGENTE
 function gerarQR() {
   let input = document.getElementById("link").value.trim();
   const canvas = document.getElementById("qrcode");
@@ -120,40 +123,34 @@ function gerarQR() {
 
   let finalLink = "";
 
-  // 📱 WHATSAPP (número)
+  // WhatsApp
   if (/^\+?\d{10,15}$/.test(input)) {
     input = input.replace(/\D/g, "");
-    if (!input.startsWith("55")) {
-      input = "55" + input; // adiciona Brasil automaticamente
-    }
+    if (!input.startsWith("55")) input = "55" + input;
     finalLink = `https://wa.me/${input}`;
   }
 
-  // 📸 INSTAGRAM (@usuario ou usuario simples)
+  // Instagram
   else if (input.startsWith("@") || (!input.includes("http") && !input.includes("."))) {
     input = input.replace("@", "");
     finalLink = `https://instagram.com/${input}`;
   }
 
-  // 🌐 LINK NORMAL
+  // Link normal
   else {
-    if (!input.startsWith("http")) {
-      input = "https://" + input;
-    }
+    if (!input.startsWith("http")) input = "https://" + input;
     finalLink = input;
   }
 
   QRCode.toCanvas(canvas, finalLink, {
-    width: 300,
+    width: 260,
     margin: 2,
     errorCorrectionLevel: 'H'
-  }, function (error) {
-    if (error) return console.error(error);
+  }, function () {
     adicionarLogo(canvas);
   });
 }
 
-// 🔥 ADICIONAR LOGO
 function adicionarLogo(canvas) {
   const input = document.getElementById("logoInput");
   if (input.files.length === 0) return;
@@ -162,26 +159,13 @@ function adicionarLogo(canvas) {
   const img = new Image();
 
   img.onload = function () {
-    const maxSize = canvas.width * 0.22;
-
-    let width = img.width;
-    let height = img.height;
-
-    if (width > height) {
-      height = (height / width) * maxSize;
-      width = maxSize;
-    } else {
-      width = (width / height) * maxSize;
-      height = maxSize;
-    }
-
-    const x = (canvas.width - width) / 2;
-    const y = (canvas.height - height) / 2;
+    const size = canvas.width * 0.22;
+    const x = (canvas.width - size) / 2;
+    const y = (canvas.height - size) / 2;
 
     ctx.fillStyle = "white";
-    ctx.fillRect(x - 10, y - 10, width + 20, height + 20);
-
-    ctx.drawImage(img, x, y, width, height);
+    ctx.fillRect(x - 8, y - 8, size + 16, size + 16);
+    ctx.drawImage(img, x, y, size, size);
   };
 
   const reader = new FileReader();
@@ -189,32 +173,23 @@ function adicionarLogo(canvas) {
   reader.readAsDataURL(input.files[0]);
 }
 
-// 📥 BAIXAR
 function baixarQR() {
   const canvas = document.getElementById("qrcode");
-
   const link = document.createElement("a");
   link.download = "qrcode.png";
-  link.href = canvas.toDataURL("image/png");
+  link.href = canvas.toDataURL();
   link.click();
 }
 
-// 💰 PIX QR
-QRCode.toCanvas(document.getElementById('pixQR'), pix, {
-  width: 200,
-  errorCorrectionLevel: 'H'
-});
-
-// MOSTRAR PIX
+// PIX
+QRCode.toCanvas(document.getElementById('pixQR'), pix, { width: 180 });
 document.getElementById("pixCode").innerText = pix;
 
-// 📲 WHATSAPP
+// WhatsApp
 function enviarWhats() {
   let msg = document.getElementById("mensagem").value;
   let telefone = "5582999284225";
-
-  let url = `https://wa.me/${telefone}?text=${encodeURIComponent(msg)}`;
-  window.open(url, "_blank");
+  window.open(`https://wa.me/${telefone}?text=${encodeURIComponent(msg)}`);
 }
 </script>
 
