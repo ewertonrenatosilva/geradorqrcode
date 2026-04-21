@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Gerador de QR Code</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      margin-top: 50px;
+    }
+    input {
+      width: 300px;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+    canvas {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Gerador de QR Code</h1>
+
+  <input type="text" id="link" placeholder="Cole seu link aqui">
+  <button onclick="gerarQR()">Gerar</button>
+
+  <br>
+  <canvas id="qrcode"></canvas>
+
+  <script>
+    function gerarQR() {
+      const link = document.getElementById("link").value;
+
+      if (!link) {
+        alert("Digite um link válido!");
+        return;
+      }
+
+      QRCode.toCanvas(document.getElementById('qrcode'), link, {
+        width: 300,
+        margin: 2,
+        errorCorrectionLevel: 'H'
+      }, function (error) {
+        if (error) console.error(error);
+      });
+    }
+  </script>
+
+</body>
+</html>
