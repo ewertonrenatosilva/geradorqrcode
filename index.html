@@ -124,7 +124,7 @@ function gerarQR() {
   });
 }
 
-// ADICIONAR LOGO
+// LOGO SEM DISTORÇÃO
 function adicionarLogo(canvas) {
   const input = document.getElementById("logoInput");
   if (input.files.length === 0) return;
@@ -133,17 +133,34 @@ function adicionarLogo(canvas) {
   const img = new Image();
 
   img.onload = function () {
-    const size = canvas.width * 0.2;
-    const x = (canvas.width - size) / 2;
-    const y = (canvas.height - size) / 2;
+    const maxSize = canvas.width * 0.22;
 
+    let width = img.width;
+    let height = img.height;
+
+    // manter proporção correta
+    if (width > height) {
+      height = (height / width) * maxSize;
+      width = maxSize;
+    } else {
+      width = (width / height) * maxSize;
+      height = maxSize;
+    }
+
+    const x = (canvas.width - width) / 2;
+    const y = (canvas.height - height) / 2;
+
+    // fundo branco (essencial)
     ctx.fillStyle = "white";
-    ctx.fillRect(x - 8, y - 8, size + 16, size + 16);
+    ctx.fillRect(x - 10, y - 10, width + 20, height + 20);
 
-    ctx.drawImage(img, x, y, size, size);
+    ctx.drawImage(img, x, y, width, height);
   };
 
-  img.src = URL.createObjectURL(input.files[0]);
+  // melhor qualidade
+  const reader = new FileReader();
+  reader.onload = e => img.src = e.target.result;
+  reader.readAsDataURL(input.files[0]);
 }
 
 // DOWNLOAD PNG
@@ -152,7 +169,7 @@ function baixarQR() {
 
   const link = document.createElement("a");
   link.download = "qrcode.png";
-  link.href = canvas.toDataURL();
+  link.href = canvas.toDataURL("image/png");
   link.click();
 }
 
@@ -162,7 +179,7 @@ QRCode.toCanvas(document.getElementById('pixQR'), pix, {
   errorCorrectionLevel: 'H'
 });
 
-// Mostrar PIX
+// mostrar PIX
 document.getElementById("pixCode").innerText = pix;
 
 // WHATSAPP
