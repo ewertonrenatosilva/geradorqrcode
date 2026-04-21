@@ -18,7 +18,7 @@ body {
 
 .container {
   width: 100%;
-  max-width: 420px; /* tamanho de celular */
+  max-width: 420px;
   background: #f9f9f9;
   min-height: 100vh;
   padding: 15px;
@@ -57,6 +57,7 @@ button {
   border: none;
   border-radius: 8px;
   font-size: 15px;
+  cursor: pointer;
 }
 
 button:active {
@@ -100,6 +101,10 @@ canvas {
 
   <p><strong>PIX:</strong></p>
   <div class="pix" id="pixCode"></div>
+
+  <p style="margin-top:10px; font-size:13px;">
+    Peço apenas uma contribuição de R$ 5,00, para eu criar mais sistemas como esse.
+  </p>
 </div>
 
 <div class="box">
@@ -124,8 +129,8 @@ function gerarQR() {
   let finalLink = "";
 
   // WhatsApp
-  if (/^\+?\d{10,15}$/.test(input)) {
-    input = input.replace(/\D/g, "");
+  if (/^\\+?\\d{10,15}$/.test(input)) {
+    input = input.replace(/\\D/g, "");
     if (!input.startsWith("55")) input = "55" + input;
     finalLink = `https://wa.me/${input}`;
   }
