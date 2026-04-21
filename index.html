@@ -94,6 +94,11 @@ canvas {
   <button onclick="baixarQR()">Baixar</button>
 
   <canvas id="qrcode"></canvas>
+
+  <!-- BOTÃO COPIAR -->
+  <button id="copiarBtn" style="display:none;" onclick="copiarLink()">
+    Copiar link
+  </button>
 </div>
 
 <div class="box">
@@ -117,6 +122,9 @@ canvas {
 <script>
 const pix = "00020126330014br.gov.bcb.pix0111084713784855204000053039865802BR5911EWERTOSILVA6009Sao Paulo610901227-20062220518daqr83657656927025630452F9";
 
+let linkGerado = "";
+
+// GERAR QR
 function gerarQR() {
   let input = document.getElementById("link").value.trim();
   const canvas = document.getElementById("qrcode");
@@ -129,8 +137,8 @@ function gerarQR() {
   let finalLink = "";
 
   // WhatsApp
-  if (/^\\+?\\d{10,15}$/.test(input)) {
-    input = input.replace(/\\D/g, "");
+  if (/^\+?\d{10,15}$/.test(input)) {
+    input = input.replace(/\D/g, "");
     if (!input.startsWith("55")) input = "55" + input;
     finalLink = `https://wa.me/${input}`;
   }
@@ -147,15 +155,21 @@ function gerarQR() {
     finalLink = input;
   }
 
+  linkGerado = finalLink;
+
   QRCode.toCanvas(canvas, finalLink, {
     width: 260,
     margin: 2,
     errorCorrectionLevel: 'H'
   }, function () {
     adicionarLogo(canvas);
+
+    // mostrar botão copiar
+    document.getElementById("copiarBtn").style.display = "block";
   });
 }
 
+// LOGO
 function adicionarLogo(canvas) {
   const input = document.getElementById("logoInput");
   if (input.files.length === 0) return;
@@ -178,6 +192,16 @@ function adicionarLogo(canvas) {
   reader.readAsDataURL(input.files[0]);
 }
 
+// COPIAR LINK
+function copiarLink() {
+  if (!linkGerado) return;
+
+  navigator.clipboard.writeText(linkGerado)
+    .then(() => alert("Link copiado!"))
+    .catch(() => alert("Erro ao copiar"));
+}
+
+// BAIXAR
 function baixarQR() {
   const canvas = document.getElementById("qrcode");
   const link = document.createElement("a");
@@ -190,7 +214,7 @@ function baixarQR() {
 QRCode.toCanvas(document.getElementById('pixQR'), pix, { width: 180 });
 document.getElementById("pixCode").innerText = pix;
 
-// WhatsApp
+// WHATSAPP
 function enviarWhats() {
   let msg = document.getElementById("mensagem").value;
   let telefone = "5582999284225";
