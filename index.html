@@ -1,87 +1,119 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Gerador de QR Code</title>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+<meta charset="UTF-8">
+<title>Contábil Sheets</title>
 
-  <style>
-    body {
-      font-family: Arial;
-      text-align: center;
-      margin-top: 50px;
-    }
-    input, button {
-      padding: 10px;
-      font-size: 16px;
-      margin: 5px;
-    }
-    canvas {
-      margin-top: 20px;
-    }
-  </style>
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
+<style>
+  body {
+    font-family: Arial;
+    text-align: center;
+    background: #f5f5f5;
+    padding: 30px;
+  }
+
+  h1 {
+    color: #0a7a3d;
+  }
+
+  canvas {
+    margin-top: 20px;
+  }
+
+  .box {
+    background: white;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+
+  .pix {
+    word-break: break-all;
+    font-size: 12px;
+    background: #eee;
+    padding: 10px;
+    border-radius: 5px;
+  }
+
+  textarea {
+    width: 90%;
+    height: 80px;
+    margin-top: 10px;
+  }
+
+  button {
+    padding: 10px 20px;
+    margin-top: 10px;
+    background: #0a7a3d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+</style>
 </head>
+
 <body>
 
-  <h1>Gerador de QR Code</h1>
+<h1>Contábil Sheets</h1>
 
-  <input type="text" id="link" placeholder="Cole seu link aqui">
-  <br>
-
-  <input type="file" id="logoInput" accept="image/*">
-  <br>
-
-  <button onclick="gerarQR()">Gerar</button>
-
-  <br>
+<div class="box">
+  <h3>Acesse o sistema</h3>
   <canvas id="qrcode"></canvas>
+</div>
 
-  <script>
-    function gerarQR() {
-      const link = document.getElementById("link").value;
-      const canvas = document.getElementById("qrcode");
+<div class="box">
+  <p><strong>Peço apenas uma única contribuição de R$ 5,00 para manter o site ativo por mais tempo.</strong></p>
 
-      if (!link) {
-        alert("Digite um link válido!");
-        return;
-      }
+  <canvas id="pixQR"></canvas>
 
-      // Gerar QR primeiro
-      QRCode.toCanvas(canvas, link, {
-        width: 300,
-        margin: 2,
-        errorCorrectionLevel: 'H' // essencial para suportar logo
-      }, function (error) {
-        if (error) return console.error(error);
+  <p><strong>PIX Copia e Cola:</strong></p>
+  <div class="pix" id="pixCode"></div>
+</div>
 
-        // Depois desenha a logo
-        adicionarLogo(canvas);
-      });
-    }
+<div class="box">
+  <h3>💬 Avaliação</h3>
+  <p>Deixe sua mensagem:</p>
+  <textarea id="mensagem">Muito obrigado</textarea>
+  <br>
+  <button onclick="enviarWhats()">Enviar para WhatsApp</button>
+</div>
 
-    function adicionarLogo(canvas) {
-      const input = document.getElementById("logoInput");
+<script>
+  // LINK PRINCIPAL
+  const link = "https://contabilsheetsoficial.github.io/Contabilidade/";
 
-      if (input.files.length === 0) return;
+  // PIX
+  const pix = "00020126330014br.gov.bcb.pix0111084713784855204000053039865802BR5911EWERTOSILVA6009Sao Paulo610901227-20062220518daqr83657656927025630452F9";
 
-      const ctx = canvas.getContext("2d");
-      const img = new Image();
+  // GERAR QR DO SITE
+  QRCode.toCanvas(document.getElementById('qrcode'), link, {
+    width: 250,
+    errorCorrectionLevel: 'H'
+  });
 
-      img.onload = function () {
-        const size = canvas.width * 0.2; // 20% (seguro)
-        const x = (canvas.width - size) / 2;
-        const y = (canvas.height - size) / 2;
+  // GERAR QR DO PIX
+  QRCode.toCanvas(document.getElementById('pixQR'), pix, {
+    width: 200,
+    errorCorrectionLevel: 'H'
+  });
 
-        // Fundo branco (ESSENCIAL)
-        ctx.fillStyle = "white";
-        ctx.fillRect(x - 5, y - 5, size + 10, size + 10);
+  // MOSTRAR PIX TEXTO
+  document.getElementById("pixCode").innerText = pix;
 
-        ctx.drawImage(img, x, y, size, size);
-      };
+  // WHATSAPP
+  function enviarWhats() {
+    let msg = document.getElementById("mensagem").value;
+    let telefone = "5582999284225";
 
-      img.src = URL.createObjectURL(input.files[0]);
-    }
-  </script>
+    let url = `https://wa.me/${telefone}?text=${encodeURIComponent(msg)}`;
+
+    window.open(url, "_blank");
+  }
+</script>
 
 </body>
 </html>
