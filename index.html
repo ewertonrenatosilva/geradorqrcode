@@ -95,7 +95,6 @@ canvas {
 
   <canvas id="qrcode"></canvas>
 
-  <!-- BOTÃO COPIAR -->
   <button id="copiarBtn" style="display:none;" onclick="copiarLink()">
     Copiar link
   </button>
@@ -106,6 +105,8 @@ canvas {
 
   <p><strong>PIX:</strong></p>
   <div class="pix" id="pixCode"></div>
+
+  <button onclick="copiarPix()">Copiar código PIX</button>
 
   <p style="margin-top:10px; font-size:13px;">
     Peço apenas uma contribuição de R$ 5,00, para eu criar mais sistemas como esse.
@@ -136,20 +137,17 @@ function gerarQR() {
 
   let finalLink = "";
 
-  // WhatsApp
   if (/^\+?\d{10,15}$/.test(input)) {
     input = input.replace(/\D/g, "");
     if (!input.startsWith("55")) input = "55" + input;
     finalLink = `https://wa.me/${input}`;
   }
 
-  // Instagram
   else if (input.startsWith("@") || (!input.includes("http") && !input.includes("."))) {
     input = input.replace("@", "");
     finalLink = `https://instagram.com/${input}`;
   }
 
-  // Link normal
   else {
     if (!input.startsWith("http")) input = "https://" + input;
     finalLink = input;
@@ -163,8 +161,6 @@ function gerarQR() {
     errorCorrectionLevel: 'H'
   }, function () {
     adicionarLogo(canvas);
-
-    // mostrar botão copiar
     document.getElementById("copiarBtn").style.display = "block";
   });
 }
@@ -194,11 +190,14 @@ function adicionarLogo(canvas) {
 
 // COPIAR LINK
 function copiarLink() {
-  if (!linkGerado) return;
-
   navigator.clipboard.writeText(linkGerado)
-    .then(() => alert("Link copiado!"))
-    .catch(() => alert("Erro ao copiar"));
+    .then(() => alert("Link copiado!"));
+}
+
+// COPIAR PIX
+function copiarPix() {
+  navigator.clipboard.writeText(pix)
+    .then(() => alert("Código PIX copiado!"));
 }
 
 // BAIXAR
