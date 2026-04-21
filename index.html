@@ -7,58 +7,58 @@
 <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
 <style>
-  body {
-    font-family: Arial;
-    text-align: center;
-    background: #f5f5f5;
-    padding: 30px;
-  }
+body {
+  font-family: Arial;
+  text-align: center;
+  background: #f5f5f5;
+  padding: 30px;
+}
 
-  h1 {
-    color: #0a7a3d;
-  }
+h1 {
+  color: #0a7a3d;
+}
 
-  input {
-    width: 80%;
-    padding: 10px;
-    margin-top: 10px;
-  }
+input {
+  width: 80%;
+  padding: 10px;
+  margin-top: 10px;
+}
 
-  canvas {
-    margin-top: 20px;
-  }
+canvas {
+  margin-top: 20px;
+}
 
-  .box {
-    background: white;
-    padding: 20px;
-    margin-top: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  }
+.box {
+  background: white;
+  padding: 20px;
+  margin-top: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
 
-  .pix {
-    word-break: break-all;
-    font-size: 12px;
-    background: #eee;
-    padding: 10px;
-    border-radius: 5px;
-  }
+.pix {
+  word-break: break-all;
+  font-size: 12px;
+  background: #eee;
+  padding: 10px;
+  border-radius: 5px;
+}
 
-  textarea {
-    width: 90%;
-    height: 80px;
-    margin-top: 10px;
-  }
+textarea {
+  width: 90%;
+  height: 80px;
+  margin-top: 10px;
+}
 
-  button {
-    padding: 10px 20px;
-    margin-top: 10px;
-    background: #0a7a3d;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
+button {
+  padding: 10px 20px;
+  margin-top: 10px;
+  background: #0a7a3d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
 </style>
 </head>
 
@@ -66,15 +66,24 @@
 
 <h1>Gerador de QR Code</h1>
 
+<!-- GERADOR -->
 <div class="box">
   <h3>Crie seu QR Code</h3>
-  <input type="text" id="link" placeholder="Cole seu link aqui">
-  <br>
-  <button onclick="gerarQR()">Gerar QR Code</button>
 
+  <input type="text" id="link" placeholder="Cole seu link aqui">
+  <br><br>
+
+  <input type="file" id="logoInput" accept="image/*">
+  <br><br>
+
+  <button onclick="gerarQR()">Gerar QR Code</button>
+  <button onclick="baixarQR()">Baixar PNG</button>
+
+  <br>
   <canvas id="qrcode"></canvas>
 </div>
 
+<!-- CONTRIBUIÇÃO -->
 <div class="box">
   <p><strong>Peço apenas uma única contribuição de R$ 5,00 para manter o site ativo por mais tempo.</strong></p>
 
@@ -84,51 +93,86 @@
   <div class="pix" id="pixCode"></div>
 </div>
 
+<!-- AVALIAÇÃO -->
 <div class="box">
   <h3>💬 Avaliação</h3>
-  <p>Deixe sua mensagem:</p>
   <textarea id="mensagem">Muito obrigado</textarea>
   <br>
   <button onclick="enviarWhats()">Enviar para WhatsApp</button>
 </div>
 
 <script>
-  const pix = "00020126330014br.gov.bcb.pix0111084713784855204000053039865802BR5911EWERTOSILVA6009Sao Paulo610901227-20062220518daqr83657656927025630452F9";
+const pix = "00020126330014br.gov.bcb.pix0111084713784855204000053039865802BR5911EWERTOSILVA6009Sao Paulo610901227-20062220518daqr83657656927025630452F9";
 
-  // Gerar QR do usuário
-  function gerarQR() {
-    const link = document.getElementById("link").value;
-    const canvas = document.getElementById("qrcode");
+// GERAR QR
+function gerarQR() {
+  const link = document.getElementById("link").value;
+  const canvas = document.getElementById("qrcode");
 
-    if (!link) {
-      alert("Digite um link válido!");
-      return;
-    }
-
-    QRCode.toCanvas(canvas, link, {
-      width: 250,
-      errorCorrectionLevel: 'H'
-    });
+  if (!link) {
+    alert("Digite um link válido!");
+    return;
   }
 
-  // Gerar QR PIX automático
-  QRCode.toCanvas(document.getElementById('pixQR'), pix, {
-    width: 200,
+  QRCode.toCanvas(canvas, link, {
+    width: 300,
+    margin: 2,
     errorCorrectionLevel: 'H'
+  }, function (error) {
+    if (error) return console.error(error);
+    adicionarLogo(canvas);
   });
+}
 
-  // Mostrar código PIX
-  document.getElementById("pixCode").innerText = pix;
+// ADICIONAR LOGO
+function adicionarLogo(canvas) {
+  const input = document.getElementById("logoInput");
+  if (input.files.length === 0) return;
 
-  // WhatsApp
-  function enviarWhats() {
-    let msg = document.getElementById("mensagem").value;
-    let telefone = "5582999284225";
+  const ctx = canvas.getContext("2d");
+  const img = new Image();
 
-    let url = `https://wa.me/${telefone}?text=${encodeURIComponent(msg)}`;
+  img.onload = function () {
+    const size = canvas.width * 0.2;
+    const x = (canvas.width - size) / 2;
+    const y = (canvas.height - size) / 2;
 
-    window.open(url, "_blank");
-  }
+    ctx.fillStyle = "white";
+    ctx.fillRect(x - 8, y - 8, size + 16, size + 16);
+
+    ctx.drawImage(img, x, y, size, size);
+  };
+
+  img.src = URL.createObjectURL(input.files[0]);
+}
+
+// DOWNLOAD PNG
+function baixarQR() {
+  const canvas = document.getElementById("qrcode");
+
+  const link = document.createElement("a");
+  link.download = "qrcode.png";
+  link.href = canvas.toDataURL();
+  link.click();
+}
+
+// QR PIX
+QRCode.toCanvas(document.getElementById('pixQR'), pix, {
+  width: 200,
+  errorCorrectionLevel: 'H'
+});
+
+// Mostrar PIX
+document.getElementById("pixCode").innerText = pix;
+
+// WHATSAPP
+function enviarWhats() {
+  let msg = document.getElementById("mensagem").value;
+  let telefone = "5582999284225";
+
+  let url = `https://wa.me/${telefone}?text=${encodeURIComponent(msg)}`;
+  window.open(url, "_blank");
+}
 </script>
 
 </body>
