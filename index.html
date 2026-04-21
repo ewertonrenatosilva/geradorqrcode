@@ -83,14 +83,18 @@ button {
   <canvas id="qrcode"></canvas>
 </div>
 
-<!-- CONTRIBUIÇÃO -->
+<!-- PIX / CONTRIBUIÇÃO -->
 <div class="box">
-  <p><strong>Peço apenas uma única contribuição de R$ 5,00 para manter o site ativo por mais tempo.</strong></p>
 
   <canvas id="pixQR"></canvas>
 
   <p><strong>PIX Copia e Cola:</strong></p>
   <div class="pix" id="pixCode"></div>
+
+  <p style="margin-top:15px;">
+    <strong>Peço apenas uma única contribuição de R$ 5,00 para manter o site ativo por mais tempo.</strong>
+  </p>
+
 </div>
 
 <!-- AVALIAÇÃO -->
@@ -138,7 +142,6 @@ function adicionarLogo(canvas) {
     let width = img.width;
     let height = img.height;
 
-    // manter proporção correta
     if (width > height) {
       height = (height / width) * maxSize;
       width = maxSize;
@@ -150,14 +153,12 @@ function adicionarLogo(canvas) {
     const x = (canvas.width - width) / 2;
     const y = (canvas.height - height) / 2;
 
-    // fundo branco (essencial)
     ctx.fillStyle = "white";
     ctx.fillRect(x - 10, y - 10, width + 20, height + 20);
 
     ctx.drawImage(img, x, y, width, height);
   };
 
-  // melhor qualidade
   const reader = new FileReader();
   reader.onload = e => img.src = e.target.result;
   reader.readAsDataURL(input.files[0]);
@@ -179,7 +180,7 @@ QRCode.toCanvas(document.getElementById('pixQR'), pix, {
   errorCorrectionLevel: 'H'
 });
 
-// mostrar PIX
+// MOSTRAR PIX
 document.getElementById("pixCode").innerText = pix;
 
 // WHATSAPP
