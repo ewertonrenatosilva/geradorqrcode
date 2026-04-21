@@ -70,7 +70,7 @@ button {
 <div class="box">
   <h3>Crie seu QR Code</h3>
 
-  <input type="text" id="link" placeholder="Cole seu link aqui">
+  <input type="text" id="link" placeholder="Digite link, @instagram ou número WhatsApp">
   <br><br>
 
   <input type="file" id="logoInput" accept="image/*">
@@ -83,7 +83,7 @@ button {
   <canvas id="qrcode"></canvas>
 </div>
 
-<!-- PIX / CONTRIBUIÇÃO -->
+<!-- PIX -->
 <div class="box">
 
   <canvas id="pixQR"></canvas>
@@ -92,7 +92,7 @@ button {
   <div class="pix" id="pixCode"></div>
 
   <p style="margin-top:15px;">
-    <strong>Peço apenas uma única contribuição de R$ 5,00 para manter o site ativo por mais tempo.</strong>
+    <strong>Peço apenas uma contribuição de R$ 5,00 🙏</strong>
   </p>
 
 </div>
@@ -108,17 +108,42 @@ button {
 <script>
 const pix = "00020126330014br.gov.bcb.pix0111084713784855204000053039865802BR5911EWERTOSILVA6009Sao Paulo610901227-20062220518daqr83657656927025630452F9";
 
-// GERAR QR
+// 🔥 GERAR QR COM DETECÇÃO INTELIGENTE
 function gerarQR() {
-  const link = document.getElementById("link").value;
+  let input = document.getElementById("link").value.trim();
   const canvas = document.getElementById("qrcode");
 
-  if (!link) {
-    alert("Digite um link válido!");
+  if (!input) {
+    alert("Digite algo válido!");
     return;
   }
 
-  QRCode.toCanvas(canvas, link, {
+  let finalLink = "";
+
+  // 📱 WHATSAPP (número)
+  if (/^\+?\d{10,15}$/.test(input)) {
+    input = input.replace(/\D/g, "");
+    if (!input.startsWith("55")) {
+      input = "55" + input; // adiciona Brasil automaticamente
+    }
+    finalLink = `https://wa.me/${input}`;
+  }
+
+  // 📸 INSTAGRAM (@usuario ou usuario simples)
+  else if (input.startsWith("@") || (!input.includes("http") && !input.includes("."))) {
+    input = input.replace("@", "");
+    finalLink = `https://instagram.com/${input}`;
+  }
+
+  // 🌐 LINK NORMAL
+  else {
+    if (!input.startsWith("http")) {
+      input = "https://" + input;
+    }
+    finalLink = input;
+  }
+
+  QRCode.toCanvas(canvas, finalLink, {
     width: 300,
     margin: 2,
     errorCorrectionLevel: 'H'
@@ -128,7 +153,7 @@ function gerarQR() {
   });
 }
 
-// LOGO SEM DISTORÇÃO
+// 🔥 ADICIONAR LOGO
 function adicionarLogo(canvas) {
   const input = document.getElementById("logoInput");
   if (input.files.length === 0) return;
@@ -164,7 +189,7 @@ function adicionarLogo(canvas) {
   reader.readAsDataURL(input.files[0]);
 }
 
-// DOWNLOAD PNG
+// 📥 BAIXAR
 function baixarQR() {
   const canvas = document.getElementById("qrcode");
 
@@ -174,7 +199,7 @@ function baixarQR() {
   link.click();
 }
 
-// QR PIX
+// 💰 PIX QR
 QRCode.toCanvas(document.getElementById('pixQR'), pix, {
   width: 200,
   errorCorrectionLevel: 'H'
@@ -183,7 +208,7 @@ QRCode.toCanvas(document.getElementById('pixQR'), pix, {
 // MOSTRAR PIX
 document.getElementById("pixCode").innerText = pix;
 
-// WHATSAPP
+// 📲 WHATSAPP
 function enviarWhats() {
   let msg = document.getElementById("mensagem").value;
   let telefone = "5582999284225";
