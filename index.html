@@ -76,6 +76,17 @@ canvas {
   border-radius: 8px;
   word-break: break-all;
 }
+
+/* BOTÃO UPLOAD PERSONALIZADO */
+.upload-btn {
+  display: block;
+  background: #ddd;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 10px;
+  cursor: pointer;
+  text-align: center;
+}
 </style>
 </head>
 
@@ -88,7 +99,13 @@ canvas {
 <div class="box">
   <input type="text" id="link" placeholder="Link, @instagram ou WhatsApp">
 
-  <input type="file" id="logoInput" accept="image/*">
+  <!-- BOTÃO PERSONALIZADO -->
+  <label class="upload-btn">
+    Escolha sua LOGO
+    <input type="file" id="logoInput" accept="image/*" hidden onchange="mostrarNomeArquivo(this)">
+  </label>
+
+  <p id="nomeArquivo" style="font-size:12px;"></p>
 
   <button onclick="gerarQR()">Gerar QR Code</button>
   <button onclick="baixarQR()">Baixar</button>
@@ -121,9 +138,15 @@ canvas {
 </div>
 
 <script>
-const pix = "08471378485";
+const pix = "00020126330014br.gov.bcb.pix0111084713784855204000053039865802BR5911EWERTOSILVA6009Sao Paulo610901227-20062220518daqr83657656927025630452F9";
 
 let linkGerado = "";
+
+// MOSTRAR NOME DO ARQUIVO
+function mostrarNomeArquivo(input) {
+  const nome = input.files[0]?.name || "";
+  document.getElementById("nomeArquivo").innerText = nome;
+}
 
 // GERAR QR
 function gerarQR() {
