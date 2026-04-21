@@ -4,22 +4,17 @@
   <meta charset="UTF-8">
   <title>Gerador de QR Code</title>
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
   <style>
     body {
       font-family: Arial;
       text-align: center;
       margin-top: 50px;
     }
-    input {
-      width: 300px;
+    input, button {
       padding: 10px;
       font-size: 16px;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      margin-left: 10px;
-      cursor: pointer;
+      margin: 5px;
     }
     canvas {
       margin-top: 20px;
@@ -31,6 +26,11 @@
   <h1>Gerador de QR Code</h1>
 
   <input type="text" id="link" placeholder="Cole seu link aqui">
+  <br>
+
+  <input type="file" id="logoInput" accept="image/*">
+  <br>
+
   <button onclick="gerarQR()">Gerar</button>
 
   <br>
@@ -39,19 +39,47 @@
   <script>
     function gerarQR() {
       const link = document.getElementById("link").value;
+      const canvas = document.getElementById("qrcode");
 
       if (!link) {
         alert("Digite um link válido!");
         return;
       }
 
-      QRCode.toCanvas(document.getElementById('qrcode'), link, {
+      // Gerar QR primeiro
+      QRCode.toCanvas(canvas, link, {
         width: 300,
         margin: 2,
-        errorCorrectionLevel: 'H'
+        errorCorrectionLevel: 'H' // essencial para suportar logo
       }, function (error) {
-        if (error) console.error(error);
+        if (error) return console.error(error);
+
+        // Depois desenha a logo
+        adicionarLogo(canvas);
       });
+    }
+
+    function adicionarLogo(canvas) {
+      const input = document.getElementById("logoInput");
+
+      if (input.files.length === 0) return;
+
+      const ctx = canvas.getContext("2d");
+      const img = new Image();
+
+      img.onload = function () {
+        const size = canvas.width * 0.2; // 20% (seguro)
+        const x = (canvas.width - size) / 2;
+        const y = (canvas.height - size) / 2;
+
+        // Fundo branco (ESSENCIAL)
+        ctx.fillStyle = "white";
+        ctx.fillRect(x - 5, y - 5, size + 10, size + 10);
+
+        ctx.drawImage(img, x, y, size, size);
+      };
+
+      img.src = URL.createObjectURL(input.files[0]);
     }
   </script>
 
