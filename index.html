@@ -77,7 +77,6 @@ canvas {
   word-break: break-all;
 }
 
-/* BOTÃO UPLOAD PERSONALIZADO */
 .upload-btn {
   display: block;
   background: #ddd;
@@ -99,7 +98,6 @@ canvas {
 <div class="box">
   <input type="text" id="link" placeholder="Link, @instagram ou WhatsApp">
 
-  <!-- BOTÃO PERSONALIZADO -->
   <label class="upload-btn">
     Escolha sua LOGO
     <input type="file" id="logoInput" accept="image/*" hidden onchange="mostrarNomeArquivo(this)">
@@ -179,16 +177,64 @@ function gerarQR() {
   linkGerado = finalLink;
 
   QRCode.toCanvas(canvas, finalLink, {
-    width: 260,
+    width: 520, // 🔥 mais resolução = mais nitidez
     margin: 2,
     errorCorrectionLevel: 'H'
   }, function () {
+    estilizarQR(canvas);
     adicionarLogo(canvas);
     document.getElementById("copiarBtn").style.display = "block";
   });
 }
 
-// LOGO
+// 🔥 VISUAL PONTILHADO
+function estilizarQR(canvas) {
+  const ctx = canvas.getContext("2d");
+  const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const data = imgData.data;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const step = 8;
+
+  for (let y = 0; y < canvas.height; y += step) {
+    for (let x = 0; x < canvas.width; x += step) {
+
+      const i = (y * canvas.width + x) * 4;
+
+      if (data[i] < 100) {
+        ctx.beginPath();
+        ctx.arc(x, y, 3, 0, Math.PI * 2);
+        ctx.fillStyle = "#0a7a3d";
+        ctx.fill();
+      }
+    }
+  }
+
+  desenharOlho(ctx, 40, 40);
+  desenharOlho(ctx, canvas.width - 40, 40);
+  desenharOlho(ctx, 40, canvas.height - 40);
+}
+
+// 🔥 OLHOS ARREDONDADOS
+function desenharOlho(ctx, x, y) {
+  ctx.fillStyle = "#0a7a3d";
+  ctx.beginPath();
+  ctx.arc(x, y, 22, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "#fff";
+  ctx.beginPath();
+  ctx.arc(x, y, 12, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "#0a7a3d";
+  ctx.beginPath();
+  ctx.arc(x, y, 6, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+// 🔥 LOGO NÍTIDA
 function adicionarLogo(canvas) {
   const input = document.getElementById("logoInput");
   if (input.files.length === 0) return;
@@ -197,12 +243,16 @@ function adicionarLogo(canvas) {
   const img = new Image();
 
   img.onload = function () {
-    const size = canvas.width * 0.22;
+    const size = canvas.width * 0.25;
     const x = (canvas.width - size) / 2;
     const y = (canvas.height - size) / 2;
 
     ctx.fillStyle = "white";
-    ctx.fillRect(x - 8, y - 8, size + 16, size + 16);
+    ctx.fillRect(x - 10, y - 10, size + 20, size + 20);
+
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+
     ctx.drawImage(img, x, y, size, size);
   };
 
