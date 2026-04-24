@@ -77,7 +77,6 @@ canvas {
   word-break: break-all;
 }
 
-/* BOTÃO UPLOAD PERSONALIZADO */
 .upload-btn {
   display: block;
   background: #ddd;
@@ -99,7 +98,6 @@ canvas {
 <div class="box">
   <input type="text" id="link" placeholder="Link, @instagram ou WhatsApp">
 
-  <!-- BOTÃO PERSONALIZADO -->
   <label class="upload-btn">
     Escolha sua LOGO
     <input type="file" id="logoInput" accept="image/*" hidden onchange="mostrarNomeArquivo(this)">
@@ -188,7 +186,7 @@ function gerarQR() {
   });
 }
 
-// LOGO
+// 🔥 LOGO AJUSTADA (NÍTIDA + PROPORCIONAL + SEGURA)
 function adicionarLogo(canvas) {
   const input = document.getElementById("logoInput");
   if (input.files.length === 0) return;
@@ -197,12 +195,20 @@ function adicionarLogo(canvas) {
   const img = new Image();
 
   img.onload = function () {
-    const size = canvas.width * 0.22;
+
+    const size = canvas.width * 0.18; // menor e proporcional
+
     const x = (canvas.width - size) / 2;
     const y = (canvas.height - size) / 2;
 
-    ctx.fillStyle = "white";
-    ctx.fillRect(x - 8, y - 8, size + 16, size + 16);
+    // fundo branco maior para proteger leitura
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(x - 12, y - 12, size + 24, size + 24);
+
+    // melhora nitidez
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+
     ctx.drawImage(img, x, y, size, size);
   };
 
