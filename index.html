@@ -177,7 +177,7 @@ function gerarQR() {
   linkGerado = finalLink;
 
   QRCode.toCanvas(canvas, finalLink, {
-    width: 520, // 🔥 mais resolução = mais nitidez
+    width: 520,
     margin: 2,
     errorCorrectionLevel: 'H'
   }, function () {
@@ -187,7 +187,7 @@ function gerarQR() {
   });
 }
 
-// 🔥 VISUAL PONTILHADO
+// 🔥 QR PROPORCIONAL (CORRIGIDO)
 function estilizarQR(canvas) {
   const ctx = canvas.getContext("2d");
   const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -195,46 +195,49 @@ function estilizarQR(canvas) {
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  const step = 8;
+  const grid = 10;
+  const dot = 4;
 
-  for (let y = 0; y < canvas.height; y += step) {
-    for (let x = 0; x < canvas.width; x += step) {
+  for (let y = 0; y < canvas.height; y += grid) {
+    for (let x = 0; x < canvas.width; x += grid) {
 
       const i = (y * canvas.width + x) * 4;
 
       if (data[i] < 100) {
         ctx.beginPath();
-        ctx.arc(x, y, 3, 0, Math.PI * 2);
+        ctx.arc(x + grid/2, y + grid/2, dot, 0, Math.PI * 2);
         ctx.fillStyle = "#0a7a3d";
         ctx.fill();
       }
     }
   }
 
-  desenharOlho(ctx, 40, 40);
-  desenharOlho(ctx, canvas.width - 40, 40);
-  desenharOlho(ctx, 40, canvas.height - 40);
+  const offset = 60;
+  desenharOlho(ctx, offset, offset);
+  desenharOlho(ctx, canvas.width - offset, offset);
+  desenharOlho(ctx, offset, canvas.height - offset);
 }
 
-// 🔥 OLHOS ARREDONDADOS
+// 🔥 OLHOS CORRETOS
 function desenharOlho(ctx, x, y) {
   ctx.fillStyle = "#0a7a3d";
+
   ctx.beginPath();
-  ctx.arc(x, y, 22, 0, Math.PI * 2);
+  ctx.arc(x, y, 26, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.fillStyle = "#fff";
   ctx.beginPath();
-  ctx.arc(x, y, 12, 0, Math.PI * 2);
+  ctx.arc(x, y, 16, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.fillStyle = "#0a7a3d";
   ctx.beginPath();
-  ctx.arc(x, y, 6, 0, Math.PI * 2);
+  ctx.arc(x, y, 8, 0, Math.PI * 2);
   ctx.fill();
 }
 
-// 🔥 LOGO NÍTIDA
+// 🔥 LOGO NÍTIDA E PROPORCIONAL
 function adicionarLogo(canvas) {
   const input = document.getElementById("logoInput");
   if (input.files.length === 0) return;
@@ -243,7 +246,7 @@ function adicionarLogo(canvas) {
   const img = new Image();
 
   img.onload = function () {
-    const size = canvas.width * 0.25;
+    const size = canvas.width * 0.20;
     const x = (canvas.width - size) / 2;
     const y = (canvas.height - size) / 2;
 
