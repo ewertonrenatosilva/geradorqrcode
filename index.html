@@ -137,7 +137,6 @@ canvas {
 
 <script>
 const pix = "08471378485";
-
 let linkGerado = "";
 
 // MOSTRAR NOME DO ARQUIVO
@@ -162,14 +161,10 @@ function gerarQR() {
     input = input.replace(/\D/g, "");
     if (!input.startsWith("55")) input = "55" + input;
     finalLink = `https://wa.me/${input}`;
-  }
-
-  else if (input.startsWith("@") || (!input.includes("http") && !input.includes("."))) {
+  } else if (input.startsWith("@") || (!input.includes("http") && !input.includes("."))) {
     input = input.replace("@", "");
     finalLink = `https://instagram.com/${input}`;
-  }
-
-  else {
+  } else {
     if (!input.startsWith("http")) input = "https://" + input;
     finalLink = input;
   }
@@ -178,7 +173,7 @@ function gerarQR() {
 
   QRCode.toCanvas(canvas, finalLink, {
     width: 520,
-    margin: 4, // 🔥 ESSENCIAL PRA LEITURA
+    margin: 4,
     errorCorrectionLevel: 'H'
   }, function () {
     estilizarQR(canvas);
@@ -187,7 +182,7 @@ function gerarQR() {
   });
 }
 
-// 🔥 ESTILO SEGURO (NÃO QUEBRA QR)
+// 🔥 QR PERFEITAMENTE PROPORCIONAL
 function estilizarQR(canvas) {
   const ctx = canvas.getContext("2d");
   const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -195,16 +190,27 @@ function estilizarQR(canvas) {
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  const pixel = 4;
+  const qrModules = 33; // base segura
+  const moduleSize = canvas.width / qrModules;
+  const dot = moduleSize * 0.45;
 
-  for (let y = 0; y < canvas.height; y += pixel) {
-    for (let x = 0; x < canvas.width; x += pixel) {
+  for (let r = 0; r < qrModules; r++) {
+    for (let c = 0; c < qrModules; c++) {
+
+      const x = Math.floor(c * moduleSize);
+      const y = Math.floor(r * moduleSize);
 
       const i = (y * canvas.width + x) * 4;
 
       if (data[i] < 128) {
         ctx.beginPath();
-        ctx.arc(x + pixel/2, y + pixel/2, pixel/2, 0, Math.PI * 2);
+        ctx.arc(
+          x + moduleSize / 2,
+          y + moduleSize / 2,
+          dot,
+          0,
+          Math.PI * 2
+        );
         ctx.fillStyle = "#0a7a3d";
         ctx.fill();
       }
@@ -221,7 +227,7 @@ function adicionarLogo(canvas) {
   const img = new Image();
 
   img.onload = function () {
-    const size = canvas.width * 0.18; // 🔥 menor = não quebra leitura
+    const size = canvas.width * 0.18;
     const x = (canvas.width - size) / 2;
     const y = (canvas.height - size) / 2;
 
