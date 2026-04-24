@@ -178,7 +178,7 @@ function gerarQR() {
 
   QRCode.toCanvas(canvas, finalLink, {
     width: 520,
-    margin: 2,
+    margin: 4, // 🔥 ESSENCIAL PRA LEITURA
     errorCorrectionLevel: 'H'
   }, function () {
     estilizarQR(canvas);
@@ -187,7 +187,7 @@ function gerarQR() {
   });
 }
 
-// 🔥 QR PROPORCIONAL (CORRIGIDO)
+// 🔥 ESTILO SEGURO (NÃO QUEBRA QR)
 function estilizarQR(canvas) {
   const ctx = canvas.getContext("2d");
   const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -195,49 +195,24 @@ function estilizarQR(canvas) {
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  const grid = 10;
-  const dot = 4;
+  const pixel = 4;
 
-  for (let y = 0; y < canvas.height; y += grid) {
-    for (let x = 0; x < canvas.width; x += grid) {
+  for (let y = 0; y < canvas.height; y += pixel) {
+    for (let x = 0; x < canvas.width; x += pixel) {
 
       const i = (y * canvas.width + x) * 4;
 
-      if (data[i] < 100) {
+      if (data[i] < 128) {
         ctx.beginPath();
-        ctx.arc(x + grid/2, y + grid/2, dot, 0, Math.PI * 2);
+        ctx.arc(x + pixel/2, y + pixel/2, pixel/2, 0, Math.PI * 2);
         ctx.fillStyle = "#0a7a3d";
         ctx.fill();
       }
     }
   }
-
-  const offset = 60;
-  desenharOlho(ctx, offset, offset);
-  desenharOlho(ctx, canvas.width - offset, offset);
-  desenharOlho(ctx, offset, canvas.height - offset);
 }
 
-// 🔥 OLHOS CORRETOS
-function desenharOlho(ctx, x, y) {
-  ctx.fillStyle = "#0a7a3d";
-
-  ctx.beginPath();
-  ctx.arc(x, y, 26, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = "#fff";
-  ctx.beginPath();
-  ctx.arc(x, y, 16, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = "#0a7a3d";
-  ctx.beginPath();
-  ctx.arc(x, y, 8, 0, Math.PI * 2);
-  ctx.fill();
-}
-
-// 🔥 LOGO NÍTIDA E PROPORCIONAL
+// 🔥 LOGO NÍTIDA E SEGURA
 function adicionarLogo(canvas) {
   const input = document.getElementById("logoInput");
   if (input.files.length === 0) return;
@@ -246,12 +221,12 @@ function adicionarLogo(canvas) {
   const img = new Image();
 
   img.onload = function () {
-    const size = canvas.width * 0.20;
+    const size = canvas.width * 0.18; // 🔥 menor = não quebra leitura
     const x = (canvas.width - size) / 2;
     const y = (canvas.height - size) / 2;
 
     ctx.fillStyle = "white";
-    ctx.fillRect(x - 10, y - 10, size + 20, size + 20);
+    ctx.fillRect(x - 8, y - 8, size + 16, size + 16);
 
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = "high";
