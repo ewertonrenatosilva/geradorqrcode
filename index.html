@@ -259,11 +259,25 @@ function baixarQR() {
 QRCode.toCanvas(document.getElementById('pixQR'), pix, { width: 180 });
 document.getElementById("pixCode").innerText = pix;
 
-// WHATSAPP
+// WHATSAPP (CORRIGIDO 🔥)
 function enviarWhats() {
   let msg = document.getElementById("mensagem").value;
-  let telefone = "5582999284225";
-  window.open(`https://wa.me/${telefone}?text=${encodeURIComponent(msg)}`);
+  let input = document.getElementById("link").value.trim();
+
+  if (!input) {
+    alert("Digite um número!");
+    return;
+  }
+
+  let numero = input.replace(/\D/g, "");
+
+  if (input.startsWith("+55")) {
+    numero = numero;
+  } else {
+    numero = "55" + numero;
+  }
+
+  window.open(`https://wa.me/${numero}?text=${encodeURIComponent(msg)}`);
 }
 </script>
 
